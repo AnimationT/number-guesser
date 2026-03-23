@@ -13,7 +13,16 @@
 </head>
 <body>
     <center>
-        <input type="text" id="guessBox" placeholder="Guess the number here" autocomplete="off">
+        <div id="options">
+            <button onclick="setRange(1, 10);">1-10</button>
+            <button onclick="setRange(1, 100);">1-100(default)</button>
+            <button onclick="setRange(1, 1000);">1-1000</button>
+            <br>
+            <br>
+            <button onclick="proceed();">proceed</button>
+        </div>
+        <br>
+        <input type="text" id="guessBox" placeholder="Guess the number here" autocomplete="off" disabled>
     <button onclick="guess();" id="guessButton">Guess</button>
     <p id="timer"></p>
     <br>

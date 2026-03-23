@@ -1,4 +1,15 @@
 var number = Math.floor(Math.random() * 100);
+
+function setRange(min, max) {
+  number = Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function proceed() {
+  $("#options").hide();
+  $("#guessBox").prop("disabled", false);
+}
+
+
 var guesses = 0;
 var timer = 0;
 var realTime = 0;
