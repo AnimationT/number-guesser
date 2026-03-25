@@ -66,3 +66,6 @@ window.addEventListener('keydown', function(e) {
     }
 });
 
+function showCustomOptions() {
+  $("#custOptions").toggle();
+}
