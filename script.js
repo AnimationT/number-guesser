@@ -4,6 +4,17 @@ function setRange(min, max) {
   number = Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function setCustomRange() {
+  let min = parseInt($("#min").val());
+  let max = parseInt($("#max").val());
+  if (isNaN(min) || isNaN(max) || min >= max) {
+    alert("Please enter valid minimum and maximum values. Minimum should be less than maximum.");
+    return;
+  }
+  setRange(min, max);
+  $("#custOptions").toggle();
+}
+
 function proceed() {
   $("#options").hide();
   $("#guessBox").prop("disabled", false);
@@ -55,3 +66,6 @@ window.addEventListener('keydown', function(e) {
     }
 });
 
+function showCustomOptions() {
+  $("#custOptions").toggle();
+}

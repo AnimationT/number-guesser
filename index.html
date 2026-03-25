@@ -13,10 +13,19 @@
 </head>
 <body>
     <center>
+        <h1>Guess the Number</h1>
         <div id="options">
             <button onclick="setRange(1, 10);">1-10</button>
             <button onclick="setRange(1, 100);">1-100(default)</button>
             <button onclick="setRange(1, 1000);">1-1000</button>
+            <button onclick="showCustomOptions();">Custom</button>
+            <div id="custOptions" hidden>
+                <label for="min">Minimum:</label>
+                <input type="number" id="min" placeholder="Enter minimum value">
+                <label for="max">Maximum:</label>
+                <input type="number" id="max" placeholder="Enter maximum value">
+                <button onclick="setCustomRange();">Set Range</button>
+            </div>
             <br>
             <br>
             <button onclick="proceed();">proceed</button>
