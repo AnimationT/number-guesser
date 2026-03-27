@@ -1,4 +1,6 @@
 var number = Math.floor(Math.random() * 100);
+var gameWon = false;
+var limitedGuessMode = false;
 
 function setRange(min, max) {
   number = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,19 +38,36 @@ function check(num) {
 }
 
 function guess() {
+  if (gameWon) return;
   let guess = parseInt($("#guessBox").val());
   let result = check(guess);
   guesses++;
   $("#guessBox").val("");
 
+  if (result == "equal") {
+    const finishTime = realTime;
+    $("#clues").append("<p>CORRECT! the number is "+number+". You got this in "+guesses+" guesses and "+finishTime+" seconds</p> <button onclick="+ "location.reload();" +">play again</button>");
+    gameWon = true;
+    return;
+  }
+
+  if (limitedGuessMode) {
+    let maxGuesses = parseInt($("#maxGuesses").val());
+    if (guesses >= maxGuesses) {
+      $("#clues").append("<p>Game Over! You've reached the maximum number of guesses. The correct number was " + number + ".</p><button onclick='location.reload();'>Play Again</button>");
+      return;
+    }
+  }
+
   if (result == "less") {
     $("#clues").append("<p>The number is MORE than "+guess+" </p>");
   } else if (result == "more") {
     $("#clues").append("<p>The number is LESS than "+guess+" </p>");
-  } else if (result == "equal") {
-    const finishTime = realTime;
-    $("#clues").append("<p>CORRECT! the number is "+number+". You got this in "+guesses+" guesses and "+finishTime+" seconds</p> <button onclick="+ "location.reload();" +">play again</button>");
-  }
+  } 
+  
+  
+
+  
 
   if (guesses === 1) {
     setInterval(function() {
@@ -68,4 +87,21 @@ window.addEventListener('keydown', function(e) {
 
 function showCustomOptions() {
   $("#custOptions").toggle();
+}
+
+function showLimitedGuessOptions() {
+  $("#limGuessOptions").toggle();
+}
+
+function setLimitedGuessMode() {
+  limitedGuessMode = true;
+  let maxGuesses = parseInt($("#maxGuesses").val());
+  if (isNaN(maxGuesses) || maxGuesses <= 0) {
+    alert("Please enter a valid number of maximum guesses.");
+    return;
+  }
+}
+
+function turnOffLimGuess() {
+  limitedGuessMode = false;
 }
