@@ -2,11 +2,27 @@ var number = Math.floor(Math.random() * 100);
 var gameWon = false;
 var limitedGuessMode = false;
 var timedGuessMode = false;
+var maxGuesses = 0;
 var timeLimit = 0;
 var timeOut = false;
+var type = "1-100";
 
 function setRange(min, max) {
   number = Math.floor(Math.random() * (max - min + 1)) + min;
+  type = min + "-" + max;
+  if (min === 1 && max === 10) {
+    $("#oneToTen").css("background-color", "lightblue");
+    $("#oneToHundred, #oneToThousand, #custom").css("background-color", "");
+  } else if (min === 1 && max === 100) {
+    $("#oneToHundred").css("background-color", "lightblue");
+    $("#oneToTen, #oneToThousand, #custom").css("background-color", "");
+  } else if (min === 1 && max === 1000) {
+    $("#oneToThousand").css("background-color", "lightblue");
+    $("#oneToTen, #oneToHundred, #custom").css("background-color", "");
+  } else {
+    $("#oneToTen, #oneToHundred, #oneToThousand").css("background-color", "");
+    $("#custom").css("background-color", "lightblue");
+  }
 }
 
 function setCustomRange() {
@@ -18,11 +34,38 @@ function setCustomRange() {
   }
   setRange(min, max);
   $("#custOptions").toggle();
+  alert("Custom Range set: Guess a number between " + min + " and " + max + ".");
+}
+
+function setLimitedGuessMode() {
+  limitedGuessMode = true;
+  maxGuesses = parseInt($("#maxGuesses").val());
+  if (isNaN(maxGuesses) || maxGuesses <= 0) {
+    alert("Please enter a valid number of maximum guesses.");
+    return;
+  }
+  $("#limGuessOptions").toggle();
+  $("#limGuessButton").css("background-color", "lightblue");
+  alert("Limited Guess Mode enabled: You have " + maxGuesses + " guesses to find the number.");
 }
 
 function proceed() {
+  let displayGuesses;
+  let displayTime;
+  if (limitedGuessMode) {
+    displayGuesses = maxGuesses + " guesses";
+  } else {
+    displayGuesses = "unlimited guesses";
+  }
+  if (timedGuessMode) {
+    displayTime = timeLimit / 1000 + " seconds";
+  } else {
+    displayTime = "unlimited time";
+  }
+
   $("#options").hide();
   $("#guessBox").prop("disabled", false);
+  $("#clues").append("<p>"+type+" • <span id='guessesLeft'>"+displayGuesses+" left</span> • " + displayTime + "</p>");
 }
 
 
@@ -47,6 +90,9 @@ function setTimedGuessMode() {
     alert("Please enter a valid time limit.");
     return;
   }
+  $("#timedGuessOptions").toggle();
+  $("#timedGuessButton").css("background-color", "lightblue");
+  alert("Timed Guess Mode enabled: You have " + (timeLimit / 1000) + " seconds to find the number.");
 }
 
 function guess() {
@@ -67,7 +113,7 @@ function guess() {
   }
 
   if (limitedGuessMode) {
-    let maxGuesses = parseInt($("#maxGuesses").val());
+    $("#guessesLeft").text(maxGuesses - guesses + " guesses left");
     if (guesses >= maxGuesses) {
       $("#clues").append("<p>Game Over! You've reached the maximum number of guesses. The correct number was " + number + ".</p><button onclick='location.reload();'>Play Again</button>");
       return;
@@ -86,7 +132,7 @@ function guess() {
     setTimeout(() => {
       if(timedGuessMode){
       timeOut = true;
-      if (!gameWon) {
+      if (!gameWon && guesses < maxGuesses) {
         $("#clues").append("<p>Time's up! The correct number was " + number + ".</p><button onclick='location.reload();'>Play Again</button>");
       }
     }
@@ -103,10 +149,28 @@ function guess() {
   }
 }
 
-window.addEventListener('keydown', function(e) {
+$("#guessBox").on('keydown', function(e) {
     if (e.key === 'Enter') {
         guess();
         console.log('Enter pressed');
+    }
+});
+
+$("#min, #max").on('keydown', function(e) {
+    if (e.key === 'Enter') {
+        setCustomRange();
+    }
+});
+
+$("#maxGuesses").on('keydown', function(e) {
+    if (e.key === 'Enter') {
+        setLimitedGuessMode();
+    }
+});
+
+$("#timeLimit").on('keydown', function(e) {
+    if (e.key === 'Enter') {
+        setTimedGuessMode();
     }
 });
 
@@ -122,21 +186,16 @@ function showTimedGuessOptions() {
   $("#timedGuessOptions").toggle();
 }
 
-function setLimitedGuessMode() {
-  limitedGuessMode = true;
-  let maxGuesses = parseInt($("#maxGuesses").val());
-  if (isNaN(maxGuesses) || maxGuesses <= 0) {
-    alert("Please enter a valid number of maximum guesses.");
-    return;
-  }
-}
+
 
 
 
 function turnOffLimGuess() {
   limitedGuessMode = false;
+  $("#limGuessButton").css("background-color", "");
 }
 
 function turnOffTimedGuess() {
   timedGuessMode = false;
+  $("#timedGuessButton").css("background-color", "");
 }
