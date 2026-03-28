@@ -28,12 +28,21 @@
             </div>
             <br>
             <br>
-            <button onclick="showLimitedGuessOptions();">Limited Guess Mode</button>
+            <button onclick="showLimitedGuessOptions();">Limited Guess Settings</button>
             <div id="limGuessOptions" hidden>
                 <label for="maxGuesses">Max Guesses:</label>
                 <input type="number" id="maxGuesses" placeholder="Enter max guesses">
                 <button onclick="setLimitedGuessMode();">Set Limited Guess Mode</button>
                 <button onclick="turnOffLimGuess();">Turn Off</button>
+            </div>
+            <br>
+            <br>
+            <button onclick="showTimedGuessOptions();">Time Limit Settings</button>
+            <div id="timedGuessOptions" hidden>
+                <label for="timeLimit">Time Limit (seconds):</label>
+                <input type="number" id="timeLimit" placeholder="Enter time limit">
+                <button onclick="setTimedGuessMode();">Set Time Limit</button>
+                <button onclick="turnOffTimedGuess();">Turn Off</button>
             </div>
             <br>
             <br>
