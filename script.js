@@ -3,6 +3,7 @@ var gameWon = false;
 var limitedGuessMode = false;
 var timedGuessMode = false;
 var maxGuesses = 0;
+var finishTime = 0;
 var timeLimit = 0;
 var timeOut = false;
 var type = "1-100";
@@ -34,7 +35,6 @@ function setCustomRange() {
   }
   setRange(min, max);
   $("#custOptions").toggle();
-  alert("Custom Range set: Guess a number between " + min + " and " + max + ".");
 }
 
 function setLimitedGuessMode() {
@@ -65,6 +65,7 @@ function proceed() {
 
   $("#options").hide();
   $("#guessBox").prop("disabled", false);
+  $("#guessButton").prop("disabled", false);
   $("#clues").append("<p>"+type+" • <span id='guessesLeft'>"+displayGuesses+" left</span> • " + displayTime + "</p>");
 }
 
@@ -72,6 +73,7 @@ function proceed() {
 var guesses = 0;
 var timer = 0;
 var realTime = 0;
+var timerInterval = null;
 
 function check(num) {
   if(num < number) {
@@ -106,8 +108,8 @@ function guess() {
   $("#guessBox").val("");
 
   if (result == "equal") {
-    const finishTime = realTime;
-    $("#clues").append("<p>CORRECT! the number is "+number+". You got this in "+guesses+" guesses and "+finishTime+" seconds</p> <button onclick="+ "location.reload();" +">play again</button>");
+    finishTime = realTime;
+    $("#clues").append("<p>CORRECT! the number is "+number+". You got this in "+guesses+" guesses and "+finishTime+" seconds</p> <button onclick="+ "restart();" +">play again</button>");
     gameWon = true;
     return;
   }
@@ -115,7 +117,7 @@ function guess() {
   if (limitedGuessMode) {
     $("#guessesLeft").text(maxGuesses - guesses + " guesses left");
     if (guesses >= maxGuesses) {
-      $("#clues").append("<p>Game Over! You've reached the maximum number of guesses. The correct number was " + number + ".</p><button onclick='location.reload();'>Play Again</button>");
+      $("#clues").append("<p>Game Over! You've reached the maximum number of guesses. The correct number was " + number + ".</p><button onclick='restart();'>Play Again</button>");
       return;
     }
   }
@@ -129,15 +131,18 @@ function guess() {
   
 
   if (guesses === 1) {
+    if (timerInterval !== null) {
+      clearInterval(timerInterval);
+    }
     setTimeout(() => {
       if(timedGuessMode){
       timeOut = true;
-      if (!gameWon && guesses < maxGuesses) {
-        $("#clues").append("<p>Time's up! The correct number was " + number + ".</p><button onclick='location.reload();'>Play Again</button>");
+      if (!gameWon && (!limitedGuessMode || guesses < maxGuesses)) {
+        $("#clues").append("<p>Time's up! The correct number was " + number + ".</p><button onclick='restart();'>Play Again</button>");
       }
     }
     }, timeLimit);
-    setInterval(function() {
+    timerInterval = setInterval(function() {
       timer++;
       realTime = timer / 100;
       if (timedGuessMode) {
@@ -198,4 +203,26 @@ function turnOffLimGuess() {
 function turnOffTimedGuess() {
   timedGuessMode = false;
   $("#timedGuessButton").css("background-color", "");
+}
+
+function restart() {
+  if (type === "1-10") {
+    setRange(1, 10);
+  } else if (type === "1-100") {
+    setRange(1, 100);
+  } else if (type === "1-1000") {
+    setRange(1, 1000);
+  } else {
+    setCustomRange();
+  }
+  $("#options").show();
+  $("#guessBox").prop("disabled", true);
+  $("#guessButton").prop("disabled", true);
+  $("#clues").empty();
+  timer = 0;
+  guesses = 0;
+  gameWon = false;
+  timeOut = false;
+  clearInterval(timerInterval);
+  $("#timer").html("");
 }
