@@ -8,6 +8,62 @@ var timeLimit = 0;
 var timeOut = false;
 var type = "1-100";
 
+var gameHistory = {
+  last1Game: localStorage.getItem("last1Game"),
+  last2Game: localStorage.getItem("last2Game"),
+  last3Game: localStorage.getItem("last3Game"),
+
+  
+
+  saveGame: function(guesses, time) {
+  if (this.last1Game === null) {
+    this.last1Game = "No games played yet."
+  }
+  if (this.last2Game === null) {
+    this.last2Game = "No games played yet."
+  }
+  if (this.last3Game === null) {
+    this.last3Game = "No games played yet."
+  }
+    let displayGuesses;
+    let displayTime;
+    if (limitedGuessMode) {
+      displayGuesses = maxGuesses + " guesses";
+    } else {
+      displayGuesses = "unlimited guesses";
+    }
+    if (timedGuessMode) {
+      displayTime = timeLimit / 1000 + " seconds";
+    } else {
+      displayTime = "unlimited time";
+    }
+    const result = "Game Type: " + type + "  • " + displayGuesses + " • " + displayTime + " • Guesses: " + guesses + " • Time: " + time + " seconds Game Won: " + gameWon;
+    this.last3Game = this.last2Game;
+    this.last2Game = this.last1Game;
+    this.last1Game = result;
+    localStorage.setItem("last1Game", this.last1Game);
+    localStorage.setItem("last2Game", this.last2Game);
+    localStorage.setItem("last3Game", this.last3Game);
+  }
+};
+
+if (gameHistory.last1Game === null) {
+    localStorage.setItem("last1Game", "No games played yet.");
+    gameHistory.last1Game = "No games played yet.";
+  }
+  if (gameHistory.last2Game === null) {
+    localStorage.setItem("last2Game", "No games played yet.");
+    gameHistory.last2Game = "No games played yet.";
+  }
+  if (gameHistory.last3Game === null) {
+    localStorage.setItem("last3Game", "No games played yet.");
+    gameHistory.last3Game = "No games played yet.";
+  }
+
+$("#last1Game").text("Last Game: " + gameHistory.last1Game);
+$("#last2Game").text("2 Games Ago: " + gameHistory.last2Game);
+$("#last3Game").text("3 Games Ago: " + gameHistory.last3Game);
+
 function setRange(min, max) {
   number = Math.floor(Math.random() * (max - min + 1)) + min;
   type = min + "-" + max;
@@ -74,6 +130,7 @@ var guesses = 0;
 var timer = 0;
 var realTime = 0;
 var timerInterval = null;
+var timeOutTimer = null;
 
 function check(num) {
   if(num < number) {
@@ -134,7 +191,10 @@ function guess() {
     if (timerInterval !== null) {
       clearInterval(timerInterval);
     }
-    setTimeout(() => {
+    if (timeOutTimer !== null) {
+      clearTimeout(timeOutTimer);
+    }
+    timeOutTimer = setTimeout(() => {
       if(timedGuessMode){
       timeOut = true;
       if (!gameWon && (!limitedGuessMode || guesses < maxGuesses)) {
@@ -206,6 +266,13 @@ function turnOffTimedGuess() {
 }
 
 function restart() {
+  if (finishTime === 0) {
+    finishTime = realTime;
+  }
+  gameHistory.saveGame(guesses, finishTime);
+  $("#last1Game").text("Last Game: " + gameHistory.last1Game);
+  $("#last2Game").text("2 Games Ago: " + gameHistory.last2Game);
+  $("#last3Game").text("3 Games Ago: " + gameHistory.last3Game);
   if (type === "1-10") {
     setRange(1, 10);
   } else if (type === "1-100") {
@@ -224,5 +291,13 @@ function restart() {
   gameWon = false;
   timeOut = false;
   clearInterval(timerInterval);
+  if (timeOutTimer !== null) {
+    clearTimeout(timeOutTimer);
+    timeOutTimer = null;
+  }
   $("#timer").html("");
+}
+
+function showHistory() {
+  $("#history").toggle();
 }
