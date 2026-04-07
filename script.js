@@ -64,6 +64,8 @@ $("#last1Game").text("Last Game: " + gameHistory.last1Game);
 $("#last2Game").text("2 Games Ago: " + gameHistory.last2Game);
 $("#last3Game").text("3 Games Ago: " + gameHistory.last3Game);
 
+$("#oneToHundred").css("background-color", "lightblue");
+
 function setRange(min, max) {
   number = Math.floor(Math.random() * (max - min + 1)) + min;
   type = min + "-" + max;
